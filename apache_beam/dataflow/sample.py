@@ -5,7 +5,7 @@ PROJECT='PROJECT_ID'
 BUCKET='BUCKET_NAME'
 schema = 'id:INTEGER,region:STRING'
 
-class Split:
+class Split(beam.DoFn):
 
     def process(self, element):
         id, region = element.split(",")
@@ -32,3 +32,6 @@ def run():
    )
 
    p.run()
+
+if __name__ == '__main__':
+   run()
