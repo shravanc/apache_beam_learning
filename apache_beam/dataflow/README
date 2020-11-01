@@ -1,0 +1,6 @@
+https://cloud.google.com/dataflow/docs/quickstarts/quickstart-python
+
+
+https://github.com/apache/beam/blob/master/sdks/python/apache_beam/examples/wordcount.py
+
+https://beam.apache.org/documentation/io/built-in/google-bigquery/

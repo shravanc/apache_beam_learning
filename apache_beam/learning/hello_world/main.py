@@ -20,14 +20,16 @@ def run(argv=None, save_main_session=True):
   parser.add_argument(
       '--input',
       dest='input',
-      default='gs://dataflow-samples/shakespeare/kinglear.txt',
+      default='/tmp/logs/2020-10-02-11-34-19-EA6C5E314B70B157',
+      #default='gs://dataflow-samples/shakespeare/kinglear.txt',
       help='Input file to process.')
   parser.add_argument(
       '--output',
       dest='output',
       # CHANGE 1/6: The Google Cloud Storage path is required
       # for outputting the results.
-      default='gs://YOUR_OUTPUT_BUCKET/AND_OUTPUT_PREFIX',
+      default='/tmp/logs/output.txt',
+      #default='gs://YOUR_OUTPUT_BUCKET/AND_OUTPUT_PREFIX',
       help='Output file to write results to.')
   known_args, pipeline_args = parser.parse_known_args(argv)
   pipeline_args.extend([
