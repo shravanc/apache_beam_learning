@@ -56,14 +56,12 @@ def run(argv=None, save_main_session=True):
 
     table_schema = 'source:STRING,  quote:STRING'
 
-    """
     quotes | beam.io.WriteToBigQuery(
         table_spec,
         schema=table_schema,
         write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE,
         create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED
     )
-    """
 
     quotes | WriteToText(known_args.output)
 
