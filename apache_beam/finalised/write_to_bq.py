@@ -50,7 +50,7 @@ def run(argv=None, save_main_session=True):
 
     table_spec = bigquery.TableReference(
         projectId='justlikethat-294122',
-        datasetId='log_analysis',
+        datasetId='mydataset',
         tableId='quotes'
     )
 
