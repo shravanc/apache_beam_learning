@@ -58,7 +58,7 @@ def run(argv=None, save_main_session=True):
         quotes | beam.io.gcp.bigquery.WriteToBigQuery(
             table_spec,
             schema=table_schema,
-            write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE,
+            write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND,
             create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED
         )
 
