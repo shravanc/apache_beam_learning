@@ -24,47 +24,84 @@ class AwsLogParser:
             tableId='access_report'
         )
 
-        self.schema = 'bucket:string,operation:string,key:string,request_uri:string\
-                      ,http_status:string,error_code:string,bytes_sent:string,object_size:string,\
-                      total_time:string,turnaround_time:string,referrer:string,user_agent:string,\
-                      request_header:string'
+        self.schema = 'bucket:string,date:string,remote_ip:string,operation:string,\
+                      key:string,request_uri:string,http_status:string,error_code:string,\
+                      bytes_sent:string,object_size:string,total_time:string,turn_aroundtime:string,\
+                      referrer:string'
 
-    def parse(self, x):
-        x = x.replace('"', '')
-        data = x.split(' ')
-        date = data[2].split('[')[-1]
-        offset = data[3].split(']')[0]
-        valid_data = [
-            data[1], # bucket_name
-            #f"{date} {offset}",
-            data[7],    # operation
-            data[8],    # Key
-            data[9],    # request_uri
-            data[10],   # http status
-            data[11],   # error_code
-            data[12],   # bytes_sent
-            data[13],   # object_size
-            data[14],   # total_time
-            data[15],   # turn_aroundtime
-            data[16],   # referrer
-            data[17],   # user_agent
-            data[26],   # request_header
-        ]
+        self.log = {
+            # 'bucket_owner': '',
+            'bucket': '',
+            'date': '',
+            #'time_offset': '',
+            'remote_ip': '',
+            #'request_arn': '',
+            #'request_id': '',
+            'operation': '',
+            'key': '',
+            'request_uri': '',
+            'http_status': '',
+            'error_code': '',
+            'bytes_sent': '',
+            'object_size': '',
+            'total_time': '',
+            'turn_aroundtime': '',
+            'referrer': '',
+            #'user_agent': '',
+            #'version_id': '',
+            #'host_id': '',
+            #'signature_version': '',
+            #'cipher_suite': '',
+            #'authentication_type': '',
+            #'host_header': '',
+            #'tls_version': ''
+        }
 
-        row = dict(zip(('bucket', 'operation', 'key', 'request_uri', 'http_status', \
-                    'error_code', 'bytes_sent', 'object_size', 'total_time', 'turnaround_time',\
-                    'referrer', 'user_agent', 'request_header'), valid_data))
-        return row
-
-
-class Utility:
-
-
-    def print_me(self, data):
-        print("Printing it here ---->", data)
 
     def parse(self, line):
-        return {'source':'Shravan C','quote':'my quote'}
+        data = line.split(' ')
+
+        #self.log['bucket_owner']         = data[0]
+        self.log['bucket']               = data[1]
+        self.log['date']                 = data[2].split('[')[-1]
+        #self.log['time_offset']          = data[3]
+        self.log['remote_ip']            = data[4]
+        #self.log['request_arn']          = data[5]
+        #self.log['request_id']           = data[6]
+        self.log['operation']            = data[7]
+        self.log['key']                  = data[8]
+        self.log['request_uri']          = data[9] + ' ' + data[10] + ' ' + data[11]
+        self.log['http_status']          = data[12]
+        self.log['error_code']           = data[13]
+        self.log['bytes_sent']           = data[14]
+        self.log['object_size']          = data[15]
+        self.log['total_time']           = data[16]
+        self.log['turn_aroundtime']      = data[17]
+        self.log['referrer']             = data[18]
+        """
+        index = 19
+        ua = ""
+        count = 0
+        while(count < 2):
+            print(index, '--->', data[index])
+            if '"' in data[index]:
+                count += 1
+            ua += data[index] + " "
+            index += 1
+        self.log['user_agent'] = ua
+        """
+        """
+        self.log['user_agent']           = data[19]
+        self.log['version_id']           = data[20]
+        self.log['host_id']              = data[21]
+        self.log['signature_version']    = data[22]
+        self.log['cipher_suite']         = data[23]
+        self.log['authentication_type']  = data[24]
+        self.log['host_header']          = data[25]
+        self.log['tls_version']          = data[26]
+        """
+        return self.log
+
 
 
 def run(argv=None, save_main_session=True):
@@ -73,7 +110,8 @@ def run(argv=None, save_main_session=True):
     parser.add_argument(
         '--input',
         dest='input',
-        default='gs://justlikethat-294122/sample.txt',
+        default='gs://justlikethat-294122/aws_logs/2020*',
+        #default='/home/shravan/Desktop/gcp_files/sample.txt',
         help='Input file to process.')
 
 
@@ -84,16 +122,17 @@ def run(argv=None, save_main_session=True):
 
     with beam.Pipeline(options=pipeline_options) as p:
 
-        utility = AwsLogParser()
+        obj = AwsLogParser()
         quotes = (
                 p
                 | 'Read' >> ReadFromText(known_args.input)
-                | 'Parse Log' >> beam.Map(lambda line: utility.parse(line))
+                | 'Parse Log' >> beam.Map(lambda line: obj.parse(line))
         )
 
+        #quotes | 'Write' >> WriteToText('output')
         quotes | beam.io.gcp.bigquery.WriteToBigQuery(
-            utility.table_spec,
-            schema=utility.schema,
+            obj.table_spec,
+            schema=obj.schema,
             write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND,
             create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED
         )
