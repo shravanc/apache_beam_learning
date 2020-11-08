@@ -1,0 +1,19 @@
+Medium Article:
+https://medium.com/analytics-vidhya/datapiepeline-using-apache-beam-and-google-cloud-dataflow-as-runner-and-bigquery-as-datasink-a6dcfadc8428
+
+Youtube Link:
+https://www.youtube.com/watch?v=xpx_MYAH53c
+
+Command to Run:
+
+export GOOGLE_APPLICATION_CREDENTIALS="/home/shravan/Downloads/justlikethat-294122-eaec2ba18a09.json"
+export PROJECT=justlikethat-294122
+export BUCKET=sample_bucket_for_medium
+export REGION=europe-west1
+
+python main.py  \
+ --region $REGION   \
+ --runner DataflowRunner  \
+ --project $PROJECT  \
+ --temp_location gs://$BUCKET/tmp/ \
+ --input gs://$BUCKET/sample_*.txt

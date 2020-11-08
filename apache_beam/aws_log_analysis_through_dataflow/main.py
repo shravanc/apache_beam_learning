@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 import argparse
 import logging
-import re
+from datetime import datetime
 
 from past.builtins import unicode
 
@@ -20,11 +20,11 @@ class AwsLogParser:
 
         self.table_spec = bigquery.TableReference(
             projectId='justlikethat-294122',
-            datasetId='s3_logs',
-            tableId='access_report'
+            datasetId='medium_dataset',
+            tableId='mytable'
         )
 
-        self.schema = 'bucket:string,date:string,remote_ip:string,operation:string,\
+        self.schema = 'bucket:string,date:datetime,remote_ip:string,operation:string,\
                       key:string,request_uri:string,http_status:string,error_code:string,\
                       bytes_sent:string,object_size:string,total_time:string,turn_aroundtime:string,\
                       referrer:string'
@@ -63,7 +63,7 @@ class AwsLogParser:
 
         #self.log['bucket_owner']         = data[0]
         self.log['bucket']               = data[1]
-        self.log['date']                 = data[2].split('[')[-1]
+        self.log['date']                 = datetime.strptime(data[2], "[%d/%b/%Y:%H:%M:%S") #data[2].split('[')[-1]
         #self.log['time_offset']          = data[3]
         self.log['remote_ip']            = data[4]
         #self.log['request_arn']          = data[5]
@@ -78,18 +78,7 @@ class AwsLogParser:
         self.log['total_time']           = data[16]
         self.log['turn_aroundtime']      = data[17]
         self.log['referrer']             = data[18]
-        """
-        index = 19
-        ua = ""
-        count = 0
-        while(count < 2):
-            print(index, '--->', data[index])
-            if '"' in data[index]:
-                count += 1
-            ua += data[index] + " "
-            index += 1
-        self.log['user_agent'] = ua
-        """
+        
         """
         self.log['user_agent']           = data[19]
         self.log['version_id']           = data[20]
@@ -140,6 +129,8 @@ def run(argv=None, save_main_session=True):
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
     run()
+
+ 
 
 
 
