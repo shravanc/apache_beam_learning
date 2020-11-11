@@ -17,3 +17,12 @@ python main.py  \
  --project $PROJECT  \
  --temp_location gs://$BUCKET/tmp/ \
  --input gs://$BUCKET/sample_*.txt
+
+
+python temp_creation.py  \
+ --region $REGION   \
+ --runner DataflowRunner  \
+ --project $PROJECT  \
+ --temp_location gs://$BUCKET/tmp/ \
+ --input gs://$BUCKET/sample_1.txt \
+ --template_location gs://$BUCKET/dataflow_templates/s3_log_to_bigquery_4 
